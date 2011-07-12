@@ -13,7 +13,7 @@ main(int argc, char** argv)
 {
     Snapper* sh = createSnapper();
 
-    sh->createSingleSnapshot("test");
+    sh->createSingleSnapshot("test", "test");
 
     exit(EXIT_SUCCESS);
 }

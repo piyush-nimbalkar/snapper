@@ -224,6 +224,7 @@ namespace snapper
 	Snapshot snapshot(snapper);
 	snapshot.type = SINGLE;
 	snapshot.num = 0;
+	snapshot.name = "current";
 	snapshot.date = (time_t)(-1);
 	snapshot.description = "current";
 	entries.push_back(snapshot);
@@ -297,6 +298,8 @@ namespace snapper
 
 	setChildValue(node, "num", num);
 
+	setChildValue(node, "name", name);
+
 	setChildValue(node, "date", datetime(date, true, true));
 
 	if (!description.empty())
@@ -317,8 +320,12 @@ namespace snapper
     void
     Snapshot::createFilesystemSnapshot() const
     {
-	SystemCmd cmd(BTRFSBIN " subvolume snapshot " + snapper->subvolumeDir() + " " + snapshotDir());
-	if (cmd.retcode() != 0)
+	SystemCmd cmd1(EXT4DEVBIN " take " + name);
+	if (cmd1.retcode() != 0)
+	    throw CreateSnapshotFailedException();
+
+	SystemCmd cmd2(MKDIRBIN " " + snapshotDir());
+	if (cmd2.retcode() != 0)
 	    throw CreateSnapshotFailedException();
     }
 
@@ -326,18 +333,23 @@ namespace snapper
     void
     Snapshot::deleteFilesystemSnapshot() const
     {
-	SystemCmd cmd(BTRFSBIN " subvolume delete " + snapshotDir());
-	if (cmd.retcode() != 0)
+	SystemCmd cmd1(EXT4DEVBIN " delete " + name);
+	if (cmd1.retcode() != 0)
+	    throw DeleteSnapshotFailedException();
+
+	SystemCmd cmd2(RMDIRBIN " " + snapshotDir());
+	if (cmd2.retcode() != 0)
 	    throw DeleteSnapshotFailedException();
     }
 
 
     Snapshots::iterator
-    Snapshots::createSingleSnapshot(string description)
+    Snapshots::createSingleSnapshot(string name, string description)
     {
 	Snapshot snapshot(snapper);
 	snapshot.type = SINGLE;
 	snapshot.num = nextNumber();
+	snapshot.name = name;
 	snapshot.date = time(NULL);
 	snapshot.description = description;
 
@@ -349,11 +361,12 @@ namespace snapper
 
 
     Snapshots::iterator
-    Snapshots::createPreSnapshot(string description)
+    Snapshots::createPreSnapshot(string name, string description)
     {
 	Snapshot snapshot(snapper);
 	snapshot.type = PRE;
 	snapshot.num = nextNumber();
+	snapshot.name = name;
 	snapshot.date = time(NULL);
 	snapshot.description = description;
 
@@ -365,7 +378,7 @@ namespace snapper
 
 
     Snapshots::iterator
-    Snapshots::createPostSnapshot(Snapshots::const_iterator pre)
+    Snapshots::createPostSnapshot(string name, Snapshots::const_iterator pre)
     {
 	if (pre == entries.end() || pre->isCurrent() || pre->getType() != PRE)
 	    throw IllegalSnapshotException();
@@ -373,6 +386,7 @@ namespace snapper
 	Snapshot snapshot(snapper);
 	snapshot.type = POST;
 	snapshot.num = nextNumber();
+	snapshot.name = name;
 	snapshot.date = time(NULL);
 	snapshot.pre_num = pre->getNum();
 

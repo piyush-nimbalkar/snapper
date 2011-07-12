@@ -39,7 +39,7 @@ main()
     time_t t = time(NULL) - 100 * 24*60*60;
     while (t < time(NULL))
     {
-	Snapshots::iterator snap = sh->createSingleSnapshot("testsuite");
+	Snapshots::iterator snap = sh->createSingleSnapshot("testsuite", "testsuite");
 	// snap->setDate(t);
 	snap->setCleanup("timeline");
 

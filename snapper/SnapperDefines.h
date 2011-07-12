@@ -34,7 +34,7 @@
 #define SNAPSHOTDIR "/snapshot"
 #define SNAPSHOTSDIR "/.snapshots"
 
-#define BTRFSBIN "/sbin/btrfs"
+#define EXT4DEVBIN "/sbin/snapshot.ext4dev"
 
 #define COMPAREDIRSBIN "/usr/lib/snapper/bin/compare-dirs"
 
@@ -45,5 +45,8 @@
 
 #define DIFFBIN "/usr/bin/diff"
 
+#define MKDIRBIN "/bin/mkdir"
+
+#define RMDIRBIN "/bin/rmdir"
 
 #endif

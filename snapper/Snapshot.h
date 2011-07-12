@@ -68,6 +68,8 @@ namespace snapper
 	unsigned int getNum() const { return num; }
 	bool isCurrent() const { return num == 0; }
 
+	string getName() const { return name; }
+
 	time_t getDate() const { return date; }
 
 	void setDescription(const string& description);
@@ -90,6 +92,8 @@ namespace snapper
 	SnapshotType type;
 
 	unsigned int num;
+
+	string name;
 
 	time_t date;
 
@@ -148,9 +152,9 @@ namespace snapper
 
 	void check() const;
 
-	iterator createSingleSnapshot(string description);
-	iterator createPreSnapshot(string description);
-	iterator createPostSnapshot(const_iterator pre);
+	iterator createSingleSnapshot(string name, string description);
+	iterator createPreSnapshot(string name, string description);
+	iterator createPostSnapshot(string name, const_iterator pre);
 
 	void deleteSnapshot(iterator snapshot);
 

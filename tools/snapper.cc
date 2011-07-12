@@ -209,6 +209,7 @@ command_list()
 	    header.add(_("Pre #"));
 	    header.add(_("Date"));
 	    header.add(_("Cleanup"));
+	    header.add(_("Name"));
 	    header.add(_("Description"));
 	    table.setHeader(header);
 
@@ -221,6 +222,7 @@ command_list()
 		row.add(it1->getType() == POST ? decString(it1->getPreNum()) : "");
 		row.add(it1->isCurrent() ? "" : datetime(it1->getDate(), false, false));
 		row.add(it1->getCleanup());
+		row.add(it1->getName());
 		row.add(it1->getDescription());
 		table.add(row);
 	    }
@@ -232,6 +234,7 @@ command_list()
 	    TableHeader header;
 	    header.add(_("#"));
 	    header.add(_("Date"));
+	    header.add(_("Name"));
 	    header.add(_("Description"));
 	    table.setHeader(header);
 
@@ -244,6 +247,7 @@ command_list()
 		TableRow row;
 		row.add(decString(it1->getNum()));
 		row.add(it1->isCurrent() ? "" : datetime(it1->getDate(), false, false));
+		row.add(it1->getName());
 		row.add(it1->getDescription());
 		table.add(row);
 	    }
@@ -257,6 +261,7 @@ command_list()
 	    header.add(_("Post #"));
 	    header.add(_("Pre Date"));
 	    header.add(_("Post Date"));
+	    header.add(_("Name"));
 	    header.add(_("Description"));
 	    table.setHeader(header);
 
@@ -275,6 +280,7 @@ command_list()
 		row.add(decString(it2->getNum()));
 		row.add(it1->isCurrent() ? "" : datetime(it1->getDate(), false, false));
 		row.add(it2->isCurrent() ? "" : datetime(it2->getDate(), false, false));
+		row.add(it1->getName());
 		row.add(it1->getDescription());
 		table.add(row);
 	    }
@@ -315,9 +321,9 @@ command_create()
     };
 
     GetOpts::parsed_opts opts = getopts.parse("create", options);
-    if (getopts.hasArgs())
+    if (getopts.numArgs() != 1)
     {
-	cerr << _("Command 'create' does not take arguments.") << endl;
+	cerr << _("Command 'create' needs one argument.") << endl;
 	exit(EXIT_FAILURE);
     }
 
@@ -350,24 +356,26 @@ command_create()
     if ((opt = opts.find("cleanup-algorithm")) != opts.end())
 	cleanup = opt->second;
 
+    string name = getopts.popArg();
+
     switch (type)
     {
 	case SINGLE: {
-	    Snapshots::iterator snap1 = sh->createSingleSnapshot(description);
+	    Snapshots::iterator snap1 = sh->createSingleSnapshot(name, description);
 	    snap1->setCleanup(cleanup);
 	    if (print_number)
 		cout << snap1->getNum() << endl;
 	} break;
 
 	case PRE: {
-	    Snapshots::iterator snap1 = sh->createPreSnapshot(description);
+	    Snapshots::iterator snap1 = sh->createPreSnapshot(name, description);
 	    snap1->setCleanup(cleanup);
 	    if (print_number)
 		cout << snap1->getNum() << endl;
 	} break;
 
 	case POST: {
-	    Snapshots::iterator snap2 = sh->createPostSnapshot(snap1);
+	    Snapshots::iterator snap2 = sh->createPostSnapshot(name, snap1);
 	    snap2->setCleanup(cleanup);
 	    if (print_number)
 		cout << snap2->getNum() << endl;
@@ -432,6 +440,7 @@ command_delete()
 	exit(EXIT_FAILURE);
     }
 
+    // TODO: Add support to delete using names
     while (getopts.hasArgs())
     {
 	Snapshots::iterator snapshot = readNum(getopts.popArg());

@@ -116,9 +116,9 @@ namespace snapper
 
 	Snapshots::const_iterator getSnapshotCurrent() const;
 
-	Snapshots::iterator createSingleSnapshot(string description);
-	Snapshots::iterator createPreSnapshot(string description);
-	Snapshots::iterator createPostSnapshot(Snapshots::const_iterator pre);
+	Snapshots::iterator createSingleSnapshot(string name, string description);
+	Snapshots::iterator createPreSnapshot(string name, string description);
+	Snapshots::iterator createPostSnapshot(string name, Snapshots::const_iterator pre);
 
 	void deleteSnapshot(Snapshots::iterator snapshot);
 

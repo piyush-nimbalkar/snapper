@@ -135,23 +135,23 @@ namespace snapper
 
 
     Snapshots::iterator
-    Snapper::createSingleSnapshot(string description)
+    Snapper::createSingleSnapshot(string name, string description)
     {
-	return snapshots.createSingleSnapshot(description);
+	return snapshots.createSingleSnapshot(name, description);
     }
 
 
     Snapshots::iterator
-    Snapper::createPreSnapshot(string description)
+    Snapper::createPreSnapshot(string name, string description)
     {
-	return snapshots.createPreSnapshot(description);
+	return snapshots.createPreSnapshot(name, description);
     }
 
 
     Snapshots::iterator
-    Snapper::createPostSnapshot(Snapshots::const_iterator pre)
+    Snapper::createPostSnapshot(string name, Snapshots::const_iterator pre)
     {
-	return snapshots.createPostSnapshot(pre);
+	return snapshots.createPostSnapshot(name, pre);
     }
 
 
@@ -595,7 +595,7 @@ namespace snapper
 	    throw AddConfigFailedException("modifying config failed");
 	}
 
-	SystemCmd cmd2(BTRFSBIN " subvolume create " + subvolume + SNAPSHOTSDIR);
+	SystemCmd cmd2(MKDIRBIN " " + subvolume + "/" + SNAPSHOTSDIR);
 	if (cmd2.retcode() != 0)
 	{
 	    throw AddConfigFailedException("creating snapshot failed");

@@ -75,7 +75,7 @@ setup()
 void
 first_snapshot()
 {
-    first = sh->createPreSnapshot("testsuite");
+    first = sh->createPreSnapshot("first", "testsuite");
     first->setCleanup("number");
 }
 
@@ -83,7 +83,7 @@ first_snapshot()
 void
 second_snapshot()
 {
-    second = sh->createPostSnapshot(first);
+    second = sh->createPostSnapshot("first", first);
     second->setCleanup("number");
 }
 
